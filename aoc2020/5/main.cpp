@@ -33,22 +33,23 @@ int main()
             else
                 mincol += half;
         }
+
         ull id = minrow * 8 + mincol;
         ids[id] = true;
         a = max(a, id);
     }
+
+    std::cout << "part 1: " << a << endl;
 
     bool found = false;
     for (int i = 1; i < (128 * 8) && !found; i++)
     {
         if (!ids[i] && ids[i - 1] && ids[i + 1])
         {
-            cout << i << endl;
+            std::cout << "part 2: " << i << endl;
             found = true;
         }
     }
-
-    std::cout << a << endl;
 
     return 0;
 }
