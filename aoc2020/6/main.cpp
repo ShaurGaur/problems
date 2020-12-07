@@ -4,13 +4,6 @@
 #define MOD 1000000007
 using namespace std;
 
-void printSet(set<char> &s)
-{
-    for (auto it = s.begin(); it != s.end(); ++it)
-        cout << *it << " ";
-    cout << endl;
-}
-
 int main()
 {
     ifstream fin("input.txt", ios::in);
