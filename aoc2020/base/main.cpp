@@ -4,12 +4,10 @@
 #define MOD 1000000007
 using namespace std;
 
-int main()
-{
+int main() {
     ifstream fin("input.txt", ios::in);
 
-    while (!fin.eof())
-    {
+    while (!fin.eof()) {
     }
 
     return 0;

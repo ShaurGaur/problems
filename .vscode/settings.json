@@ -6,6 +6,7 @@
         "*.tcc": "cpp",
         "xiosbase": "cpp",
         "xstring": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "string": "cpp"
     }
 }
