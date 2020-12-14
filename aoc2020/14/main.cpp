@@ -49,9 +49,6 @@ ull partTwo(string file) {
     vector<int> floats;
     vector<int> ones;
     string temp;
-    ull n = 1;
-    n <<= 20;
-    n <<= 20;
     unordered_map<ull, ull> mem;
 
     while (!fin.eof()) {
@@ -80,14 +77,11 @@ ull partTwo(string file) {
                     bitset<36> d = b;
                     c[i] = 1;
                     d[i] = 0;
-                    // cout << b.to_ullong() << endl << c.to_ullong() << endl << d.to_ullong() << endl;
                     copy.push_back(c);
                     copy.push_back(d);
                 }
                 bitsets = copy;
             }
-            
-            // for (auto b : bitsets) cout << b.to_ullong() << endl;
             
             for (auto b : bitsets)
                 mem[b.to_ullong()] = val;
