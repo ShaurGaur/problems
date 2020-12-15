@@ -20,7 +20,6 @@ ull foo(vector<ull>& nums) {
             last = says[last][m-1] - says[last][m-2];
         }
         says[last].push_back(i);
-        cout << i << "\r";
     }
     return last;
 }
@@ -31,7 +30,7 @@ int main() {
 
     while (!fin.eof()) {
         fin >> temp;
-        cout << temp << ":\n";
+        cout << temp << ": ";
         vector<ull> nums(0, 0);
         size_t comma = temp.find(',');
         while (comma != string::npos) {
