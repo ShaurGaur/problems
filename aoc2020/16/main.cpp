@@ -109,7 +109,6 @@ int main() {
             }
             myTicket.push_back(stoul(temp, nullptr, 10));
         }
-
         else if (section == 2 && temp[0] >= '0' && temp[0] <= '9') {
             tickets.push_back({});
             size_t comma = temp.find(',');
