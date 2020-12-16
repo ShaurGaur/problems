@@ -34,10 +34,8 @@ ull part2() {
     int n = tickets.size(), m = tickets[0].size();
     vector<string> fieldOrder(m);
     vector<unordered_set<string>> fieldsLeft(m);
-    vector<string> fieldCands;
 
     for (int i = 0; i < m; i++) {
-        fieldCands.clear();
         for (auto p : fields) {
             bool good = true;
             vector<int> ops = {
