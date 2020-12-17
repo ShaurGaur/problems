@@ -8,6 +8,26 @@ set<vector<int>> active;
 set<vector<int>> active0;
 int n = 0;
 
+set<vector<int>> genDeltas(int n) {
+    vector<int> zeros(n, 0);
+    set<vector<int>> ans;
+    
+    for (int t = 0; t < n; t++) {
+        set<vector<int>> temp = ans;
+        ans.clear();
+        if (temp.size() == 0) temp.insert({{}});
+        for (vector<int> v : temp)
+        for (int x = -1; x <= 1; x++) {
+            vector<int> u = v;
+            u.push_back(x);
+            ans.insert(u);
+        }
+    }
+
+    ans.erase(zeros);
+    return ans;
+}
+
 void updateActive(map<vector<int>, int>& freqs) {
     set<vector<int>> active2;
     for (auto p : freqs) {
@@ -19,37 +39,20 @@ void updateActive(map<vector<int>, int>& freqs) {
     active = active2;
 }
 
-ull part1() {
-   for (int t = 0; t < 6; t++) {
-        set<vector<int>> active2;
-        for (vector<int> v : active) {
-            for (int x = (v[0] - 1); x <= (v[0] + 1); x++)
-            for (int y = (v[1] - 1); y <= (v[1] + 1); y++)
-            for (int z = (v[2] - 1); z <= (v[2] + 1); z++)
-            if (x != v[0] || y != v[1] || z != v[2])
-                freqs[{x, y, z, 0}]++;
-        }
+ull solve(int d) {
+    set<vector<int>> deltas = genDeltas(d);
+    map<vector<int>, int> freqs;
+    for (int t = 0; t < 6; t++) {
+        for (vector<int> v : active) 
+        for (vector<int> u : deltas) {
+            vector<int> x = v;
+            for (int i = 0; i < d; i++) x[i] += u[i];
+            freqs[x]++;
+        } 
         updateActive(freqs);
+        freqs.clear();      
     }
-
-    return active.size(); 
-}
-
-ull part2() {
-   for (int t = 0; t < 6; t++) {
-        map<vector<int>, int> freqs;
-        for (vector<int> v : active) {
-            for (int x = (v[0] - 1); x <= (v[0] + 1); x++)
-            for (int y = (v[1] - 1); y <= (v[1] + 1); y++)
-            for (int z = (v[2] - 1); z <= (v[2] + 1); z++)
-            for (int w = (v[3] - 1); w <= (v[3] + 1); w++)
-            if (x != v[0] || y != v[1] || z != v[2] || w != v[3])
-                freqs[{x, y, z, w}]++;
-        }
-        updateActive(freqs);
-    }
-
-    return active.size(); 
+    return active.size();
 }
 
 int main() {
@@ -69,9 +72,9 @@ int main() {
     fin.close();
 
     active0 = active;
-    cout << "part 1: " << part1() << endl;
+    cout << "part 1: " << solve(3) << endl;
     active = active0;
-    cout << "part 2: " << part2() << endl;
+    cout << "part 2: " << solve(4) << endl;
 
     return 0;
 }
