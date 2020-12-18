@@ -9,6 +9,7 @@
         "cstdlib": "cpp",
         "string": "cpp",
         "xutility": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "xlocale": "cpp"
     }
 }
