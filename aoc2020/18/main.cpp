@@ -6,67 +6,59 @@ using namespace std;
 
 vector<string> eqs;
 
+ull findClosePar(string s, ull i) {
+    ull fronts = 1, backs = 0, j = 1;
+    while (backs < fronts) {
+        if (s[i+j] == '(') fronts++;
+        else if (s[i+j] == ')') backs++;
+        if (backs != fronts) j++;
+    }
+    return j;
+}
+
 ull solve1(string s) {
     ull ans = 0, i = 0;
     bool mult = false;
+    
     while (i < s.length()) {
-        if (s[i] == '*') mult = true;
-        else if (s[i] == '+') mult = false;
-        else if (s[i] >= '0' && s[i] <= '9') {
+        if (s[i] >= '0' && s[i] <= '9') {
             if (mult) ans *= (s[i] - '0');
             else ans += (s[i] - '0');
         }
         else if (s[i] == '(') {
-            ull fronts = 1, backs = 0, j = 1;
-            while (backs < fronts) {
-                if (s[i+j] == '(') fronts++;
-                else if (s[i+j] == ')') backs++;
-                if (backs != fronts) j++;
-            }
+            ull j = findClosePar(s, i);
             ull x = solve1(s.substr(i+1, j-1));
             if (mult) ans *= x;
             else ans += x;
-            i = i + j;            
+            i += j;            
         }
+        else if (s[i] == '*') mult = true;
+        else if (s[i] == '+') mult = false;
         i++;        
     }
+    
     return ans;
 }
 
 ull solve2(string s) {
     ull ans = 0, i = 0;
-    bool mult = false;
     vector<ull> mults;
 
     while (i < s.length()) {
         if (s[i] == '*') {
             mults.push_back(ans);
             ans = 0;
-        }
-        else if (s[i] == '+') mult = false;
-        else if (s[i] >= '0' && s[i] <= '9') {
-            if (mult) ans *= (s[i] - '0');
-            else ans += (s[i] - '0');
-        }
-        else if (s[i] == '(') {
-            ull fronts = 1, backs = 0, j = 1;
-            while (backs < fronts) {
-                if (s[i+j] == '(') fronts++;
-                else if (s[i+j] == ')') backs++;
-                if (backs != fronts) j++;
-            }
-            ull x = solve2(s.substr(i+1, j-1));
-            if (mult) ans *= x;
-            else ans += x;
-            i = i + j;            
-        }
+        } else if (s[i] == '(') {
+            ull j = findClosePar(s, i);
+            ans += solve2(s.substr(i+1, j-1));
+            i += j;            
+        } else if (s[i] >= '0' && s[i] <= '9')
+            ans += (s[i] - '0');
         i++;        
     }
-    mults.push_back(ans);
 
-    ull prod = 1;
-    for (ull i : mults) prod *= i; 
-    return prod;   
+    for (ull i : mults) ans *= i; 
+    return ans;   
 }
 
 ull part1() {
