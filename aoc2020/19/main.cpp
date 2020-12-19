@@ -48,30 +48,68 @@ void dfs(
         }
         for (string y : a) ans.insert(y);
     }
-
     dp[r] = ans;
 }
 
 ull part1(
     unordered_map<ull, string>& rules, 
-    vector<string> messages, 
+    vector<string>& messages, 
     unordered_map<ull, unordered_set<string>>& dp
 ) {
     ull sum = 0;
-    for (string s : messages) {
-        bool b = (dp[0].find(s) != dp[0].end());
-        // cout << s << " " << b << endl;
-        if (b) sum++;
+    for (string s : messages)
+        if (dp[0].find(s) != dp[0].end()) 
+            sum++;
+    return sum;
+}
+
+ull part2(
+    unordered_map<ull, string>& rules, 
+    vector<string>& messages, 
+    unordered_map<ull, unordered_set<string>>& dp
+) {
+    ull len = dp[42].begin()->length();
+    ull sum = 0;
+
+    for (string m : messages) {
+        string s = m;
+        bool good = true, back = true;
+        if (s.length() % len) good = false;
+        unordered_map<int, int> count;
+        count[42] = 0;
+        count[31] = 0;
+        
+        while (good && s.length() > 0) {
+            string cand, temp;
+            if (back) {
+                cand = s.substr(s.length() - len);
+                temp = s.substr(0, s.length() - len);
+            }
+            else {
+                cand = s.substr(0, len);
+                temp = s.substr(len);
+            }
+            ull idx = (back) ? 31 : 42;
+            if (dp[idx].find(cand) == dp[idx].end()) {
+                if (back) {
+                    back = false;
+                    temp = s;
+                }
+                else good = false;
+            }
+            else count[idx]++;
+            s = temp;
+        }
+
+        if (good && count[42] > count[31] && count[31] > 0)
+            sum++;
     }
 
     return sum;
 }
 
-ull part2() {
-    return 420;
-}
-
 int main() {
+    cout << "File: ";
     string temp;
     cin >> temp;
     ifstream fin(temp, ios::in);
@@ -107,24 +145,9 @@ int main() {
     }
     fin.close();
 
-    // cout << "Rules:\n";
-    for (auto p : rules) {
-        // cout << p.first << " -> " << p.second << endl;
-        dfs(rules, messages, dp, p.first);
-    }
-
-    // cout << "Messages:\n";
-    // for (string s : messages) cout << "\"" << s << "\"\n";
-
-    // cout << "DP:\n";
-    // for (auto p : dp) {
-    //     cout << p.first << " -> ";
-    //     for (string s : p.second) cout << "'" << s << "' ";
-    //     cout << endl;
-    // }
-
+    dfs(rules, messages, dp, 0);
     cout << "part 1: " << part1(rules, messages, dp) << endl;
-    cout << "part 2: " << part2() << endl;
+    cout << "part 2: " << part2(rules, messages, dp) << endl;
 
     return 0;
 }
