@@ -10,6 +10,7 @@
         "string": "cpp",
         "xutility": "cpp",
         "utility": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "initializer_list": "cpp"
     }
 }
