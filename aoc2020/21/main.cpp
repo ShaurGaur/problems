@@ -6,7 +6,6 @@ using namespace std;
 
 unordered_map<string, ull> key;
 unordered_map<string, set<string>> cands;
-vector<pair<set<string>, set<string>>> items;
 map<string, string> danger;
 
 ull part1() {
@@ -68,10 +67,6 @@ int main() {
         while (temp.back() < 'a' || temp.back() > 'z')
             temp.pop_back();
         allergens.insert(temp);
-
-        set<string> all = allergens;
-        set<string> ing = ingredients;
-        items.push_back({ing, all});
 
         for (string a : allergens) {
             if (cands[a].size() == 0) 
