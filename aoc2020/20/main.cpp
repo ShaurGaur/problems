@@ -31,9 +31,10 @@ void flip(vector<string>& v, ull dir) {
     if (dir) for (int i = 0; i < n; i++)
         v[i] = reverse(v[i]);
     else for (int i = 0; i < (n/2); i++) 
-        swap(v[i], v[9-i]);
+        swap(v[i], v[n-1-i]);
 }
 
+// Based on https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/
 void sbin(vector<string>& v) {
     ull n = v.size();
     for (int i = 0; i < (n/2); i++) {
@@ -59,7 +60,6 @@ void flipTile(ull tile, ull dir) {
 }
 
 // Rotate tile clockwise by 90 degrees. 
-// Based on https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/
 void sbinTile(ull tile) {
     sbin(m[tile]);
 
@@ -167,6 +167,31 @@ void makeImage() {
     }
 }
 
+ull monsters(vector<string>& im) {
+    vector<string> seal = {
+       "                  # ",
+       "#    ##    ##    ###",
+       " #  #  #  #  #  #   " 
+    };
+    ull h = 3, w = seal[0].size(), n = im.size(), a = 0;
+
+    for (int i = 0; i < n-h; i++) for (int j = 0; j < n-w; j++) {
+        bool good = true;
+        for (int i2 = 0; i2 < h && good; i2++) 
+            for (int j2 = 0; j2 < w && good; j2++)
+                if (seal[i2][j2] != ' ' && im[i+i2][j+j2] != '#') 
+                    good = false;
+
+        if (good) {
+            a++;
+            for (int i2 = 0; i2 < h; i2++) for (int j2 = 0; j2 < w; j2++)
+                if (seal[i2][j2] != ' ') im[i+i2][j+j2] = 'O';
+        }
+    }
+
+    return a;
+}
+
 ull part1() {
     for (auto p : edges) intersection[p.first].resize(4);
 
@@ -206,18 +231,32 @@ ull part1() {
 
 ull part2() {
     makeGrid();
-    cout << "GRID:\n";
-    for (vector<ull> v : tilegrid) {
-        for (int i : v) cout << i << " ";
-        cout << endl;
+    makeImage();
+    ull is = image.size();
+
+    vector<vector<string>> images(8, vector<string>(is, ""));
+    for (int i = 0; i < 8; i++) 
+        for (int j = 0; j < is; j++)
+            images[i][j] = image[j];
+
+    for (int i = 4; i < 8; i++) flip(images[i], 0);
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < (i % 4); j++) 
+            sbin(images[i]);
+    
+    ull maxVal = 0, maxIdx = 0;
+    for (int i = 0; i < 8; i++) {
+        ull m = monsters(images[i]);
+        if (m > maxVal) {
+            maxIdx = i;
+            maxVal = m;
+        }
     }
 
-    makeImage();
-    cout << "IMAGE:\n";
-    for (string s : image)
-        cout << s << endl;
-
-    return 420;
+    ull ans = 0;
+    for (int i = 0; i < is; i++) for (int j = 0; j < is; j++)
+        if (images[maxIdx][i][j] == '#') ans++;
+    return ans;
 }
 
 int main() {
@@ -238,31 +277,7 @@ int main() {
     fin.close();
     getEdges();
 
-    // for (auto p : m) {
-    //     cout << "TILE " << p.first << endl;
-    //     for (string s : p.second) 
-    //         cout << s << endl;
-    //     cout << endl;
-    // }
-
-    cout << "EDGES:\n";
-    for (auto p : edges) {
-        cout << p.first << ": ";
-        for (auto q : p.second) 
-            cout << q.first << " { " << q.second.first << " , " << q.second.second << " }\t";
-        cout << endl;
-    }
-
     cout << "part 1: " << part1() << endl;
-    cout << "INTER:\n";
-    for (auto p : intersection) {
-        cout << p.first << ": ";
-        for (int i = 0; i < 4; i++) 
-            cout << i << ":" << p.second[i] << "\t";
-        cout << endl;
-    }
-
-    ull x = part2();
-    cout << "part 2: " << x << endl;
+    cout << "part 2: " << part2() << endl;
     return 0;
 }
