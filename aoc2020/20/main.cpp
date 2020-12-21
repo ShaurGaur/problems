@@ -193,6 +193,7 @@ ull monsters(vector<string>& im) {
 }
 
 ull part1() {
+    getEdges();
     for (auto p : edges) intersection[p.first].resize(4);
 
     for (auto p : edges) {
@@ -275,7 +276,6 @@ int main() {
             m[cur].push_back(temp);
     }
     fin.close();
-    getEdges();
 
     cout << "part 1: " << part1() << endl;
     cout << "part 2: " << part2() << endl;
