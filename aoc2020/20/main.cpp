@@ -7,6 +7,8 @@ using namespace std;
 unordered_map<ull, vector<string>> m;
 unordered_map<ull, unordered_map<ull, pair<ull, ull>>> edges;
 unordered_map<ull, vector<ull>> intersection;
+vector<vector<ull>> tilegrid;
+vector<string> image;
 
 ull str2Bit(string s) {
     ull x = 0;
@@ -24,13 +26,31 @@ string reverse(string s) {
     return t;
 }
 
-void flip(ull tile, ull dir) {
+void flip(vector<string>& v, ull dir) {
+    ull n = v.size();
+    if (dir) for (int i = 0; i < n; i++)
+        v[i] = reverse(v[i]);
+    else for (int i = 0; i < (n/2); i++) 
+        swap(v[i], v[9-i]);
+}
+
+void sbin(vector<string>& v) {
+    ull n = v.size();
+    for (int i = 0; i < (n/2); i++) {
+        for (int j = i; j < n-1-i; j++) {
+            char temp = v[i][j];
+            v[i][j] = v[n - 1 - j][i];
+            v[n - 1 - j][i] = v[n - 1 - i][n - 1 - j];
+            v[n - 1 - i][n - 1 - j] = v[j][n - 1 - i];
+            v[j][n - 1 - i] = temp;
+        }
+    }
+}
+
+void flipTile(ull tile, ull dir) {
     dir %= 2;   // 0 is top, 1 right, 2 bottom, 3 left
-    if (dir) for (int i = 0; i < 10; i++)
-        m[tile][i] = reverse(m[tile][i]);
-    else for (int i = 0; i < 5; i++) 
-        swap(m[tile][i], m[tile][9-i]);
-    
+    flip(m[tile], dir);
+
     ull notdir = (dir != 1);
     swap(edges[tile][notdir].first, edges[tile][notdir].second);
     swap(edges[tile][notdir+2].first, edges[tile][notdir+2].second);
@@ -40,16 +60,8 @@ void flip(ull tile, ull dir) {
 
 // Rotate tile clockwise by 90 degrees. 
 // Based on https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/
-void sbin(ull tile) {
-    for (int i = 0; i < 5; i++) {
-        for (int j = i; j < 9-i; j++) {
-            char temp = m[tile][i][j];
-            m[tile][i][j] = m[tile][9 - j][i];
-            m[tile][9 - j][i] = m[tile][9 - i][9 - j];
-            m[tile][9 - i][9 - j] = m[tile][j][9 - i];
-            m[tile][j][9 - i] = temp;
-        }
-    }
+void sbinTile(ull tile) {
+    sbin(m[tile]);
 
     ull t0 = edges[tile][0].first, t1 = edges[tile][0].second;
     ull r0 = edges[tile][1].first, r1 = edges[tile][1].second;
@@ -62,8 +74,8 @@ void sbin(ull tile) {
     edges[tile][3] = {b0, b1};
 
     ull temp = intersection[tile][3];
-    for (ull i = 0; i < 3; i++) 
-        intersection[tile][i + 1] = intersection[tile][i];
+    for (ull i = 3; i > 0; i--) 
+        intersection[tile][i] = intersection[tile][i-1];
     intersection[tile][0] = temp;
 }
 
@@ -81,6 +93,77 @@ void getEdges() {
             ull a = str2Bit(edge), b = str2Bit(reverse(edge));
             edges[idx][i] = {a, b};
         }
+    }
+}
+
+void makeGrid() {
+    ull tileCount = m.size();
+    ull root = (ull) sqrt((double) tileCount);
+    vector<vector<ull>> grid(root, vector<ull>(root, 0));
+
+    // find top left corner
+    for (auto it = intersection.begin(); it != intersection.end() && !grid[0][0]; ++it) {
+        ull count = 0;
+        for (ull i : it->second) if (i != 0) count++;
+        if (count == 2) grid[0][0] = it->first;
+    }
+
+    // rotate topLeft
+    ull tl = grid[0][0];
+    while (intersection[tl][0] || intersection[tl][3]) {
+        if (!intersection[tl][0] && !intersection[tl][1]) flipTile(tl, 1);
+        else if (!intersection[tl][2] && !intersection[tl][1]) 
+            for (int i = 0; i < 2; i++) sbinTile(tl);
+        else if (!intersection[tl][2] && !intersection[tl][3]) flipTile(tl, 0);
+    }
+
+    // build top row of grid
+    for (int i = 1; i < root; i++) {
+        ull cur = grid[0][i-1];
+        ull nxt = intersection[cur][1];
+        ull dir = 0;
+        bool found = false;
+        while (dir < 4 && !found) {
+            if (intersection[nxt][dir] == cur) found = true;
+            else dir++;
+        }
+        for (int i = dir; i < 3; i++) sbinTile(nxt);
+        if (edges[cur][1].first != edges[nxt][3].first) 
+            flipTile(nxt, 0);
+        grid[0][i] = nxt;
+    }
+
+    // build rest of rows from each top element
+    for (int j = 0; j < root; j++) {
+        for (int i = 1; i < root; i++) {
+            ull cur = grid[i-1][j];
+            ull nxt = intersection[cur][2];
+            ull dir = 0;
+            bool found = false;
+            while (dir < 4 && !found) {
+                if (intersection[nxt][dir] == cur) found = true;
+                else dir++;
+            }
+            while (dir != 0) {
+                sbinTile(nxt);
+                dir = (dir + 1) % 4;
+            }
+            if (edges[cur][2].first != edges[nxt][0].first) 
+                flipTile(nxt, 1);
+            grid[i][j] = nxt;
+        }
+    }
+
+    tilegrid = grid;
+}
+
+void makeImage() {
+    if (tilegrid.size() == 0) makeGrid();
+    for (int i = 0; i < tilegrid.size(); i++) for (int j = 1; j < 9; j++) {
+        string s = "";
+        for (int k = 0; k < tilegrid[0].size(); k++)
+            s = s + m[tilegrid[i][k]][j].substr(1, 8);
+        image.push_back(s);
     }
 }
 
@@ -122,27 +205,17 @@ ull part1() {
 }
 
 ull part2() {
-    ull tileCount = m.size();
-    ull root = (ull) sqrt((double) tileCount);
-    vector<vector<ull>> grid(root, vector<ull>(root, 0));
-
-    // find top left corner
-    for (auto it = intersection.begin(); it != intersection.end() && !grid[0][0]; ++it) {
-        ull count = 0;
-        for (ull i : it->second) if (i != 0) count++;
-        if (count == 2) grid[0][0] = it->first;
-    }
-  
-    // rotate topLeft
-    ull tl = grid[0][0];
-    while (intersection[tl][0] && intersection[tl][3]) {
-        if (!intersection[tl][0] && !intersection[tl][1]) flip(tl, 1);
-        else if (!intersection[tl][2] && !intersection[tl][1]) 
-            for (int i = 0; i < 2; i++) sbin(tl);
-        else if (!intersection[tl][2] && !intersection[tl][3]) flip(tl, 0);
+    makeGrid();
+    cout << "GRID:\n";
+    for (vector<ull> v : tilegrid) {
+        for (int i : v) cout << i << " ";
+        cout << endl;
     }
 
-    // build rest of grid
+    makeImage();
+    cout << "IMAGE:\n";
+    for (string s : image)
+        cout << s << endl;
 
     return 420;
 }
@@ -172,13 +245,13 @@ int main() {
     //     cout << endl;
     // }
 
-    // cout << "EDGES:\n";
-    // for (auto p : edges) {
-    //     cout << p.first << ": ";
-    //     for (auto q : p.second) 
-    //         cout << q.first << " { " << q.second.first << " , " << q.second.second << " } ";
-    //     cout << endl;
-    // }
+    cout << "EDGES:\n";
+    for (auto p : edges) {
+        cout << p.first << ": ";
+        for (auto q : p.second) 
+            cout << q.first << " { " << q.second.first << " , " << q.second.second << " }\t";
+        cout << endl;
+    }
 
     cout << "part 1: " << part1() << endl;
     cout << "INTER:\n";
@@ -188,7 +261,8 @@ int main() {
             cout << i << ":" << p.second[i] << "\t";
         cout << endl;
     }
-    cout << "part 2: " << part2() << endl;
 
+    ull x = part2();
+    cout << "part 2: " << x << endl;
     return 0;
 }
