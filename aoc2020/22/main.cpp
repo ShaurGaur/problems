@@ -6,7 +6,6 @@ using namespace std;
 
 queue<ull> p1;
 queue<ull> p2;
-set<pair<queue<ull>, queue<ull>>> rounds;
 
 ull detScore(queue<ull> q) {
     ull sum = 0;
