@@ -13,6 +13,7 @@ ull part2() {
 }
 
 int main() {
+    cout << "File: ";
     string temp;
     cin >> temp;
     ifstream fin(temp, ios::in);
@@ -23,6 +24,5 @@ int main() {
 
     cout << "part 1: " << part1() << endl;
     cout << "part 2: " << part2() << endl;
-
     return 0;
 }
