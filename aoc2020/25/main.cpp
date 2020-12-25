@@ -4,12 +4,32 @@
 #define MOD 1000000007
 using namespace std;
 
-ull part1() {
-    return 69;
+ull card, door;
+
+ull loopSize(ull key) {
+    ull div = 20201227, cur = 1, idx = 0, sub = 7;
+    while (cur != key) {
+        cur *= sub;
+        cur %= div;
+        idx++;
+    }
+    return idx;
 }
 
-ull part2() {
-    return 420;
+ull decrypt(ull sub, ull idx) {
+    ull cur = 1, div = 20201227;
+    while (idx > 0) {
+        cur *= sub;
+        cur %= div;
+        idx--;        
+    }
+    return cur;
+}
+
+ull part1() {
+    ull cs = loopSize(card), ds = loopSize(door);
+    ull ans = decrypt(card, ds);
+    return ans;
 }
 
 int main() {
@@ -17,12 +37,8 @@ int main() {
     string temp;
     cin >> temp;
     ifstream fin(temp, ios::in);
-
-    while (!fin.eof()) {
-    }
+    fin >> card >> door;
     fin.close();
-
     cout << "part 1: " << part1() << endl;
-    cout << "part 2: " << part2() << endl;
     return 0;
 }
