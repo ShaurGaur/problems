@@ -11,6 +11,8 @@
         "xutility": "cpp",
         "utility": "cpp",
         "xlocale": "cpp",
-        "initializer_list": "cpp"
+        "initializer_list": "cpp",
+        "algorithm": "cpp",
+        "limits": "cpp"
     }
 }
