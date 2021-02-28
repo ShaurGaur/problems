@@ -2,7 +2,7 @@ import pprint
 
 n = int(input())
 t = [int(i) for i in input().split(" ")]
-d = [[1e9 for i in range(n)] for i in range(n)]
+d = [[1e18 for i in range(n)] for i in range(n)]
 w = [[0 for i in range(n)] for i in range(n)]
 
 for i in range(n):
@@ -23,8 +23,9 @@ while edgeCount < totalEdges:
     for i in range(n):
         for j in range(n):
             for k in range(n):
-                if i != k and i != j and d[i][k] > d[i][j] + d[j][k]:
-                    d[k][i] = d[i][k] = d[i][j] + d[j][k]
+                dist = min(d[i][j] + d[j][k], d[k][j] + d[j][i])
+                if i != k and i != j and (d[i][k] > dist or d[k][i] > dist):
+                    d[k][i] = d[i][k] = dist
                     edgeCount += 1
 
 ans = [sum([d[i][j]*w[i][j] for j in range(n)]) for i in range(n)]
