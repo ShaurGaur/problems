@@ -23,11 +23,12 @@ int main(int argc, char **argv) {
     else input_txt = string(argv[1]);
     ifstream fin(input_txt.c_str(), ios::in);
     
+    string x;
     while (!fin.eof()) {
-        
+        fin >> x;
     }
 
-    cout << partOne() << endl;
-    cout << partTwo() << endl;
+    cout << "Part 1: " << partOne() << endl;
+    cout << "Part 2: " << partTwo() << endl;
     return 0;
 }

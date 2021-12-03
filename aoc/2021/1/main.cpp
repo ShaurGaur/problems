@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         v.push_back(x);
     }
 
-    cout << partOne(v) << endl;
-    cout << partTwo(v) << endl;
+    cout << "Part 1: " << partOne(v) << endl;
+    cout << "Part 2: " << partTwo(v) << endl;
     return 0;
 }
