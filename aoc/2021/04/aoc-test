@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Compiling ..."
+g++ -g main.cpp -o aoc-run
+echo "Done!"
+
+echo
+echo "Testing on AOC example input:"
+./aoc-run test.txt
+
+echo
+echo "Testing on our puzzle input:"
+./aoc-run input.txt
+
+rm -f aoc-run
