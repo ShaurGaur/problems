@@ -7,11 +7,19 @@ using namespace std;
 vector<ull> v;
 
 ull partOne() {
-    return 0;
+    ull ans = 0;
+
+    
+
+    return ans;
 }
 
 ull partTwo() {
-    return 0;
+    ull ans = 0;
+
+    
+
+    return ans;
 }
 
 int main(int argc, char **argv) {
