@@ -11,8 +11,6 @@ ull backtrack(vector<string>& path, bool onlyOne) {
     string node = path.back();
     ull ans = 0;
     if (node == "end") return 1;
-    
-    // cout << "node: " << node << endl;
 
     if (small.find(node) != small.end()) {
         ull visited = 0, i = 0, smalls = 0;
