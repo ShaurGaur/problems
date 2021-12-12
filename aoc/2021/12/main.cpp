@@ -7,25 +7,24 @@ using namespace std;
 unordered_map<string, unordered_set<string>> m;
 unordered_set<string> small;
 
-ull backtrack(vector<string>& path, bool onlyOne) {
+ull backtrack(vector<string>& path, bool two) {
     string node = path.back();
     ull ans = 0;
     if (node == "end") return 1;
 
     if (small.find(node) != small.end()) {
-        ull visited = 0, i = 0, smalls = 0;
-        while (i < path.size() - 1) {
-            if (path[i] == node) visited++;
-            i++;
-        }
+        bool visited = false;
         
-        if (visited && (onlyOne || node == "start")) return 0;
-        else if (visited && !onlyOne) onlyOne = true;
+        for (int i = 0; i < path.size() - 1 && !visited; i++)
+            if (path[i] == node) visited = true;
+        
+        if (visited && (!two || node == "start")) return 0;
+        else if (visited && two) two = false;
     }
 
     for (string s : m[node]) {
         path.push_back(s);
-        ans += backtrack(path, onlyOne);
+        ans += backtrack(path, two);
         path.pop_back();
     }
 
@@ -35,14 +34,14 @@ ull backtrack(vector<string>& path, bool onlyOne) {
 ull partOne() {
     ull ans = 0;
     vector<string> path = {"start"};
-    ans += backtrack(path, true);
+    ans += backtrack(path, false);
     return ans;
 }
 
 ull partTwo() {
     ull ans = 0;
     vector<string> path = {"start"};
-    ans += backtrack(path, false);
+    ans += backtrack(path, true);
     return ans;
 }
 
